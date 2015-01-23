@@ -1,0 +1,316 @@
+/***********************************************************************
+; ECE 362 - Experiment 10 - Fall 2013
+;***********************************************************************
+;	 	   			 		  			 		  		
+; Completed by: < your name >
+;               < your class number >
+;               < your lab division >
+;
+;
+; Academic Honesty Statement:  In entering my name above, I hereby certify
+; that I am the individual who created this HC(S)12 source file and that I 
+; have not copied the work of any other student (past or present) while 
+; completing it. I understand that if I fail to honor this agreement, I will 
+; receive a grade of ZERO and be subject to possible disciplinary action.
+;                             
+;***********************************************************************
+;
+; The objective of this lab is to control the speed of a small D.C.
+; motor using pulse width modulation.  The PWM duty cycle will be
+; a function of an input analog D.C. voltage (range: 0 to 5 volts).
+; The speed of the motor will be determined by the number of pulses
+; detected by the pulse accumulator (estimated over a 1.0 second
+; integration period); an updated estimate of the motor RPM will
+; be displayed once every second.  The timer (TIM) will be used
+; to drive the ATD sample/PWM update rate (every one-tenth second)
+; and the display update rate (every second).  The RPM estimate  
+; will be based on the number of pulses accumulated from the motor's 
+; 64-hole chopper over a 1.0 second integration period (divided by 28,
+; to estimate the gear head output shaft speed).  The real time   
+; interrupt (RTI) will be used to sample the pushbutton state.
+;
+; The docking module pushbuttons and LEDs will be used as follows:
+; - left pushbutton (PAD7): stop motor (if running)
+; - right pushbutton (PAD6): start motor (if stopped)
+; - left LED (PT1): on if motor stopped
+; - right LED (PT0): on if motor running
+;
+; The RPM value will be displayed on the terminal screen and on the
+; first line of the LCD. A bar graph showing the percent-of-max 
+; will be displayed on the second line of the LCD.
+;
+; All parts needed to build the motor interface circuit are available
+; from the Instrument Room (EE 162) - see schematic in lab document.
+;
+;***********************************************************************/
+#include <hidef.h>      /* common defines and macros */
+#include "derivative.h"      /* derivative-specific definitions */
+#include <mc9s12c32.h>
+
+// All funtions after main should be initialiezed here
+void outchar(char x);
+void rdisp();
+void bco();
+
+
+//  Variable declarations  	   			 		  			 		       
+int leftpb	= 0;  // left pushbutton flag
+int rghtpb	= 0;  // right pushbutton flag
+int prevpb	= 0;  // previous pushbutton state
+int runstp	= 0;  // motor run/stop flag
+int onesec = 0;  //  one second flag
+int tenths	= 0;  // tenth of a second flag
+int onecnt	= 0; // ONECNT (variable)
+int tencnt	= 0; // TENCNT (variable)
+int tin	= 0;    // SCI transmit display buffer IN pointer
+int tout	= 0;  // SCI transmit display buffer OUT pointer
+int tsize	= 0;  // size of transmit buffer
+int tbuf	= 0;  // SCI transmit display buffer
+long int pulsescnt   = 0;
+// Note: int size is 65,536 (It is not big enough to count the pulses each second so use long)!!
+// long int size is 4,294,967,296
+
+// ASCII character definitions
+int CR = 0x0D;//Return   
+
+//;LCD COMMUNICATION BIT MASKS
+int RS = 0x04;     //;RS pin mask (PTT[2])
+int RW = 0x08;     //;R/W pin mask (PTT[3])
+int LCDCLK  = 0x10;     //;LCD EN/CLK pin mask (PTT[4])
+
+//;LCD INSTRUCTION CHARACTERS
+int LCDON = 0x0F;     //;LCD initialization command
+int LCDCLR = 0x01;     //;LCD clear display command
+int TWOLINE = 0x38;     //;LCD 2-line enable command
+
+int CURMOV = 0xFE;     //;LCD cursor move instruction
+
+int LINE1 = 0x80;     //;LCD line 1 cursor position
+int LINE2 = 0xC0;     //;LCD line 2 cursor position
+
+	 	   		
+/***********************************************************************
+Initializations
+***********************************************************************/
+void  initializations(void) {
+
+//; Set the PLL speed (bus clock = 24 MHz)
+  CLKSEL = CLKSEL & 0x80; //; disengage PLL from system
+  PLLCTL = PLLCTL | 0x40; //; turn on PLL
+  SYNR = 0x02;            //; set PLL multiplier
+  REFDV = 0;              //; set PLL divider
+  while (!(CRGFLG & 0x08)){  }
+  CLKSEL = CLKSEL | 0x80; //; engage PLL
+
+// Disable watchdog timer (COPCTL register)
+  COPCTL = 0x40   ; //COP off; RTI and COP stopped in BDM-mode
+
+// Initialize asynchronous serial port (SCI) for 9600 baud, no interrupts
+  SCIBDH =  0x00; //set baud rate to 9600
+  SCIBDL =  0x9C; //24,000,000 / 16 / 156 = 9600 (approx)  dec=26
+  SCICR1 =  0x00; //$9C = 156
+  SCICR2 =  0x0C; //initialize SCI for program-driven operation
+         
+         
+/*; Initialize TIM Ch 7 (TC7) for periodic interrupts every 10.0 ms
+;    Enable timer subsystem                         
+;    Set channel 7 for output compare
+;    Set appropriate pre-scale factor and enable counter reset after OC7
+;    Set up channel 7 to generate 10 ms interrupt rate
+;    Initially disable TIM Ch 7 interrupts	 	   			 		  			 		  		
+*/	 	   			 		  			 		  		
+//;  < add TIM initialization code here >
+
+
+/*
+; Initialize the PWM unit to produce a signal with the following
+; characteristics on PWM output channel 3:
+;   - sampling frequency of approximately 100 Hz
+;   - left-aligned, negative polarity
+;   - period register = $FF (yielding a duty cycle range of 0% to 100%,
+;     for duty cycle register values of $00 to $FF 
+;   - duty register = $00 (motor initially stopped)
+;                         
+; IMPORTANT: Need to set MODRR so that PWM Ch 3 is routed to port pin PT3
+;
+; BE CAREFUL NOT TO SHORT THE MOTOR COIL DRIVE SIGNAL TO GROUND!
+;*/ 	   			 		  			 		  		
+//;  < add PWM initialization code here >
+
+
+
+/*; Initialize the ATD to sample a D.C. input voltage (range: 0 to 5V)
+; on Channel 0 (connected to a 10K-ohm potentiometer). The ATD should
+; be operated in a program-driven (i.e., non-interrupt driven), normal
+; flag clear mode using nominal sample time/clock prescaler values,
+; 8-bit, unsigned, non-FIFO mode.
+;                         
+; Note: Vrh (the ATD reference high voltage) is connected to 5 VDC and
+;       Vrl (the reference low voltage) is connected to GND on the 
+;       9S12C32 kit.  An input of 0v will produce output code 00h,
+;       while an input of 5.00 volts will produce output code FFh.
+*/	 	   			 		  			 		  		
+//;  < add ATD initialization code here >
+
+	 	   			 		  			 		  		
+
+/*; Initialize the pulse accumulator (PA) for event counting mode,
+; and to increment on negative edges (no PA interrupts will be utilized,
+; since overflow should not occur under normal operating conditions).
+*/		     
+//;  < add PA initialization code here >
+
+
+
+//; Initialize the RTI for an 2.048 ms interrupt rate.
+//;  < add RTI initialization code here >
+      
+      
+
+//; Initialize SPI for baud rate of 6 MHz, MSB first
+//; - Consult 3.1.3 of the SPI Block User Guide     
+//;  < add SPI initialization code here >
+//; note that R/S, R/W', and LCD clk are on different PTT pins
+
+
+
+//; General port pin/data direction register initializations, etc.
+
+
+//; Initialize the LCD
+	 	   			 		  			 		  		
+
+//;  < add any additional initialization code needed here >
+
+
+ 
+	      
+}
+	 		  			 		  		
+/***********************************************************************
+Main
+***********************************************************************/
+void main(void) {
+  DisableInterrupts
+	initializations(); 		  			 		  		
+	EnableInterrupts;
+
+ while(1) {
+
+  
+//; If right pushbutton pressed, start motor and turn on right LED (left LED off)
+
+//; If left pushbutton pressed, stop motor and turn on left LED (right LED off)
+
+//; Every one-tenth second (when "tenths" flag set):
+//;    - perform ATD conversion on Ch 0 
+//;    - copy the converted value to the PWM duty register for Ch 0
+	 	   			 		  			 		  		
+/*; Every second (when "onesec" flag set):
+;    - read (and clear) the PACNT value
+;    - convert the PACNT value to BCD and display it
+;      + on terminal screen using bco
+;      + on first line of LCD in "                          RPM" format
+;      + on second line of LCD display "    
+*/  
+   
+    
+    _FEED_COP(); /* feeds the dog */
+  } /* loop forever */
+  /* please make sure that you never leave main */
+}
+
+
+
+
+/***********************************************************************                       
+; RTI interrupt service routine: RTI_ISR
+;
+; Initialized for 8.192 ms interrupt rate
+;
+;  Samples state of pushbuttons (PAD7 = left, PAD6 = right)
+;
+;  If change in state from "high" to "low" detected, set pushbutton flag
+;     leftpb (for PAD7 H -> L), rghtpb (for PAD6 H -> L)
+;     Recall that pushbuttons are momentary contact closures to ground	
+;***********************************************************************/
+interrupt 7 void RTI_ISR(void)
+{
+  	// set CRGFLG bit 
+  	CRGFLG = CRGFLG | 0x80; 
+// No need to add anything in the .PRM file, the interrupt number is included above
+
+}
+
+/***********************************************************************                       
+;  TIM interrupt service routine
+;
+;  Initialized for 10.0 ms interrupt rate
+;
+;  Uses variable "tencnt" to track if one-tenth second has accumulated
+;     and sets "tenths" flag 
+;                         
+;  Uses variable "onecnt" to track if one second has accumulated and
+;     sets "onesec" flag		 		  			 		  		
+;***********************************************************************/
+interrupt 15 void TIM_ISR( void)
+{
+  // set TFLG1 bit 
+ 	TFLG1 = TFLG1 | 0x80; 
+// No need to add anything in the .PRM file, the interrupt number is included above
+
+}
+
+/***********************************************************************                       
+;  SCI (transmit section) interrupt service routine
+;                         
+;  Read status register to enable TDR write
+;  Check status of TBUF
+;  If EMPTY, disable SCI transmit interrupts and exit; else, continue
+;  Access character from TBUF
+;  Output character to SCI TDR
+;  Increment TOUT mod TSIZE		  			 		  		
+;***********************************************************************/
+interrupt 20 void SCI_ISR( void)
+{
+// No need to add anything in the .PRM file, the interrupt number is included above
+
+}
+/***********************************************************************                              
+;  SCI buffered character output routine "bco"
+;
+;  Outputs character passed in the A register to the screen
+;
+;  Check TBUF status
+;  If FULL, wait for space
+;  Place character in TBUF
+;  Increment TIN mod TSIZE
+;  Enable SCI transmit interrupts
+;***********************************************************************/
+void bco()
+{
+ 
+
+}
+/***********************************************************************                              
+; RPM display routine - rdisp
+;                         
+; This routine starts by reading (and clearing) the 16-bit PA register.
+; It then calculates an estimate of the RPM based on the number of
+; pulses accumulated from the 64-hole chopper over a one second integration
+; period and divides this value by 28 to estimate the gear head output
+; shaft speed. Next, it converts this binary value to a 3-digit binary coded
+; decimal (BCD) representation and displays the converted value on the
+; terminal as "RPM = NNN" (updated in place).  Finally this RPM value, along
+; with a bar graph showing ther percent-of-max of the current RPM value
+; are shifted out to the LCD using pmsglcd.
+;
+;***********************************************************************/
+void rdisp()
+{
+ 
+ 
+}
+
+
+

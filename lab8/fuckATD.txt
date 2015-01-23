@@ -1,0 +1,76 @@
+ATDCTL2_ASCIE = 0;
+    ATDCTL2_AFFC = 1;
+    ATDCTL2_ADPU = 1;
+     
+    ATDCTL3_FIFO = 0;
+    ATDCTL3_S1C = 0;
+    ATDCTL3_S2C = 1;
+    ATDCTL3_S4C = 0;
+    ATDCTL3_S8C = 0;
+    ATDCTL4_SRES8 = 1;
+    ATDCTL5_MULT = 1;
+
+
+void main(void) {
+  	DisableInterrupts;
+	initializations(); 		  			 		  		
+	EnableInterrupts;
+  //while(leftpb == 0 && runstp == 0){
+     ATDCTL2 = 0xc0;
+     lcdwait();
+    ATDCTL3 = 0x10;
+    
+    ATDCTL4 = 0x80;
+    ATDCTL5 = 0x10;
+    lcdwait();
+    lcdwait();
+    outchar(ATDCTL5);
+    thresh =  ATDDR0H * 2;
+    if(thresh > 500) {
+      thresh = 500;
+    }
+    pmsglcd("Tresh = ",1);
+    lcdwait();
+    print_c(thresh/100 + 48);
+    outchar(thresh/100 + 48);
+    
+    print_c((thresh%100)/10 + 48);
+    outchar((thresh%100)/10 + 48);
+    
+    print_c(thresh%10 + 48);
+    outchar(thresh%10 + 48);
+    print_c('m');
+    print_c('s');
+
+
+
+void tdisp()
+{
+
+    pmsglcd("RT=",1);
+    print_c(react/100 + 48);
+    print_c( (react/10)%10 + 48);
+    print_c(react%10 + 48);
+    print_c('m');
+    print_c('s');
+    if(react < prereact){
+      pmsglcd("New record!",2);
+      prereact = react;
+    } else if(react < 300){
+      pmsglcd("So quick!",2);
+      PTT_PTT5 = 1;
+      PTT_PTT6 = 0;
+     
+    } else {
+      pmsglcd("Just so so!",2);
+      PTT_PTT5 = 1;
+      PTT_PTT6 = 0;
+    }
+  
+      if(prereact ==0){
+        prereact = react;
+      }
+        
+ 
+ 
+}
