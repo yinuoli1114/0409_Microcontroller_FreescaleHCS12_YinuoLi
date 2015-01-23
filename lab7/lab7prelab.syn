@@ -1,0 +1,11 @@
+JDF B
+// Created by Version 1.5 
+PROJECT lab7prelab
+DESIGN lab7prelab Normal
+DEVKIT GAL22V10D-15LP
+ENTRY ABEL/Schematic
+MODULE lab7 .abl
+MODSTYLE lab7prelab Normal
+SYNTHESIS_TOOL Synplify
+SIMULATOR_TOOL ActiveHDL
+TOPMODULE lab7prelab

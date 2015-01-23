@@ -1,0 +1,73 @@
+#$ TOOL ispLEVER Classic 1.5.00.05.39.l1
+#$ DATE Sun Mar 09 21:09:14 2014
+#$ TITLE lab7abel
+#$ MODULE lab7prelab
+#$ JEDECFILE lab7prelab
+#$ PINS 12 r0:14 r1:15 r2:16 r3:17 r4:18 r5:19 r6:20 r7:21 r8:22 r9:23 pt4:1 pt3:2
+
+.model lab7prelab
+.inputs pt4.BLIF r8.BLIF r7.BLIF r6.BLIF r5.BLIF r4.BLIF r3.BLIF r2.BLIF r1.BLIF \
+r0.BLIF pt3.BLIF
+.outputs r0.C r1.C r2.C r3.C r4.C r5.C r6.C r7.C r8.C r9.C r9.REG r8.REG \
+r7.REG r6.REG r5.REG r4.REG r3.REG r2.REG r1.REG r0.REG
+.names pt3.BLIF r0.REG
+0 1
+1 0
+.names pt4.BLIF r0.C
+1 1
+0 0
+.names pt4.BLIF r1.C
+1 1
+0 0
+.names pt4.BLIF r2.C
+1 1
+0 0
+.names pt4.BLIF r3.C
+1 1
+0 0
+.names pt4.BLIF r4.C
+1 1
+0 0
+.names pt4.BLIF r5.C
+1 1
+0 0
+.names pt4.BLIF r6.C
+1 1
+0 0
+.names pt4.BLIF r7.C
+1 1
+0 0
+.names pt4.BLIF r8.C
+1 1
+0 0
+.names pt4.BLIF r9.C
+1 1
+0 0
+.names r8.BLIF r9.REG
+1 1
+0 0
+.names r7.BLIF r8.REG
+1 1
+0 0
+.names r6.BLIF r7.REG
+1 1
+0 0
+.names r5.BLIF r6.REG
+1 1
+0 0
+.names r4.BLIF r5.REG
+1 1
+0 0
+.names r3.BLIF r4.REG
+1 1
+0 0
+.names r2.BLIF r3.REG
+1 1
+0 0
+.names r1.BLIF r2.REG
+1 1
+0 0
+.names r0.BLIF r1.REG
+1 1
+0 0
+.end

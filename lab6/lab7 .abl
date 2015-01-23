@@ -1,0 +1,22 @@
+MODULE lab7prelab
+
+TITLE 'lab7abel'
+
+declarations
+
+!r0..!r9 pin 14..23 istype 'com';
+leds = [r0..r9];
+pt4 pin 1;
+pt3 pin 2;
+
+equations
+
+leds.clk = pt4;
+[r9..r1] := [r8..r0];
+r0 := pt3;
+
+
+
+
+END
+

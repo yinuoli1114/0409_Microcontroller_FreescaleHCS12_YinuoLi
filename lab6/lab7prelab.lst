@@ -1,0 +1,59 @@
+0002 |
+0003 |TITLE 'lab7abel'
+0004 |
+0005 |declarations
+0006 |
+0007 |!r0..!r9 pin 14..23 istype 'com';
+0008 |leds = [r0..r9];
+0009 |pt4 pin 1;
+0010 |pt3 pin 2;
+0011 |
+0012 |equations
+0013 |
+0014 |leds.clk = pt4;
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r0' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r1' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r2' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r3' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r4' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r5' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r6' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r7' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r8' is combinatorial.
+                 ^
+Warning 1053: In "lab7 .abl":14:Signal 'r9' is combinatorial.
+0015 |[r9..r1] := [r8..r0];
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r9' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r8' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r7' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r6' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r5' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r4' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r3' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r2' is combinatorial.
+                    ^
+Warning 1053: In "lab7 .abl":15:Signal 'r1' is combinatorial.
+0016 |r0 = pt3;
+0017 |
+0018 |
+0019 |
+0020 |
+0021 |END
+0022 |

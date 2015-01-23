@@ -1,0 +1,36 @@
+ispLEVER Auto-Make Log File
+---------------------------
+
+Updating: Create Fuse Map
+Start to record tcl script...
+Finished recording TCL script.
+
+Starting: 'C:\ispLEVER_Classic1_5\ispcpld\bin\fuseasm.exe lab7prelab.tt3 -dev p22v10g -o lab7prelab.jed -ivec NoInput.tmv -rep lab7prelab.rpt -doc brief -con ptblown -for brief -err automake.err -gui'
+
+FUSEASM  Fusemap Assembler
+ispLEVER Classic 1.5 Copyright(C), 1992-2005, Lattice Semiconductor Corporation. All rights reserved
+Portions Copyright(c), 1992-1999, Vantis Corporation
+Portions Copyright(C), 1993-1998, Data I/O Corporation
+Portions Copyright(C), 1997-1998, MINC Washington Corporation
+Portions Copyright(C), Alan Phillips, Lancaster University Computer Centre 1992-1998
+Note 5144: Could not open vector file NoInput.tmv
+
+Input file: 'lab7prelab.tt3'
+Device: 'P22V10G'
+Building model...
+Choosing best polarities...
+Mapping equations...
+.
+20 of 132 terms used; 0 vectors loaded
+Programmer load file: 'lab7prelab.jed'
+Generating report...
+Report file: 'lab7prelab.rpt'
+
+FUSEASM complete.  Time: 1 second 
+
+Done: completed successfully.
+
+Starting: 'C:\ispLEVER_Classic1_5\ispcpld\bin\synsvf.exe -exe "C:\ispLEVER_Classic1_5\ispvmsystem/ispufw" -prj lab7prelab -if lab7prelab.jed -j2s -log lab7prelab.svl -gui'
+
+Need not generate svf file according to the constraints, exit
+Done: completed successfully.
