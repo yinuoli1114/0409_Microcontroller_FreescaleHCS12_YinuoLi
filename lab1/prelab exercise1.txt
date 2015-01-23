@@ -1,0 +1,16 @@
+org $800
+ldaa bdcin
+anda #$f0
+lsra
+tfr  a,b
+lsra
+lsra
+psha
+addb  1,sp+
+ladd  bcdin
+anda  #$0f
+psha 
+addb  1,sp+
+stab  binout
+stop
+fcb  $34

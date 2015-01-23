@@ -1,0 +1,12 @@
+org  $800
+ldaa  #$17
+adaa  #$D3
+DAA
+LDAB
+PSHB
+ADDA  0,sp
+daa
+ldaa #$19
+suba  1,sp+
+daa
+stop
